@@ -1,0 +1,15 @@
+[package]
+name = "magic-in-ten-mins-rs"
+version = "0.1.0"
+authors = ["PhotonQuantum <self@lightquantum.me>"]
+edition = "2018"
+build = "build.rs"
+
+[dependencies]
+
+[build-dependencies]
+tango = { git = "https://github.com/pnkfelix/tango.git" }
+
+[lib]
+name = "magic_in_ten_mins_rs"
+path = "src/lib.rs"

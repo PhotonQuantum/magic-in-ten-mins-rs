@@ -1,0 +1,6 @@
+/target
+/src/*.rs
+/src/lib.md
+!/src/lib.rs
+/tango.stamp
+/.idea
