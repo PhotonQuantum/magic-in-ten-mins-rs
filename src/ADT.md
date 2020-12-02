@@ -24,7 +24,7 @@ struct Student {
 }
 ```
 
-而上面这段代码中 Student 的类型中既有 String 类型的值也有 isize 类型的值。这种情况我们称其为 String 和 isize 的「积」，即`String * i64。
+而上面这段代码中 Student 的类型中既有 String 类型的值也有 isize 类型的值。这种情况我们称其为 String 和 isize 的「积」，即`String * i64`。
 
 ## 和类型（Sum type）
 
@@ -57,7 +57,7 @@ enum Bool {
 
 ```rust
 #[test]
-fn bool_test() {
+fn test_bool() {
     let b = True;
     match b {
         True => (),
@@ -101,7 +101,7 @@ impl Display for Nat {
 }
 
 #[test]
-fn nat_test() {
+fn test_nat() {
     let nat = S!(S!(S!(O)));
     assert_eq!(format!("{}", nat), String::from("3"));
 }

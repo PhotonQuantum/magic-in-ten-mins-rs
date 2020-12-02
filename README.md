@@ -18,7 +18,7 @@ $ cargo test
 
 [偏易|代数数据类型(Algebraic Data Type)[Rust 基础]](src/ADT.md)
 
-    [偏易|广义代数数据类型(Generalized Algebriac Data Type)[Java基础，ADT]](doc/GADT.md)
+[偏易|广义代数数据类型(Generalized Algebriac Data Type)[Rust 基础，ADT]](src/GADT.md)
 
     [偏易|单位半群(Monoid)[Java基础]](doc/Monoid.md)
 
