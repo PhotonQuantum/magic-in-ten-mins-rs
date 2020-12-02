@@ -30,12 +30,12 @@ struct BVal(bool);
 #[derive(Copy, Clone)]
 struct Add<T1: Expr<Backing=i64>, T2: Expr<Backing=i64>>(T1, T2);
 #[derive(Copy, Clone)]
-struct Eq<T1: Expr, T2: Expr>(T1, T2);
+struct Eq<B: Copy, T1: Expr<Backing=B>, T2: Expr<Backing=B>>(T1, T2);
 
 impl Expr for IVal { type Backing = i64; }
 impl Expr for BVal { type Backing = bool; }
 impl<T1: Expr<Backing=i64>, T2: Expr<Backing=i64>> Expr for Add<T1, T2> { type Backing = i64; }
-impl<T1: Expr, T2: Expr> Expr for Eq<T1, T2> { type Backing = bool; }
+impl<B: Copy, T1: Expr<Backing=B>, T2: Expr<Backing=B>> Expr for Eq<B, T1, T2> { type Backing = bool; }
 ```
 
 这样就可以避免构造出两个类型为`bool`的表达式相加，能构造出的表达式都是类型安全的。
@@ -51,6 +51,8 @@ fn test_gadt() {
     let v3 = Add(v1, v2);
     let v4 = Add(v3, v2);
     // [This will never check]
+    // let fail = Eq(I3, v4);
+    // [This won't either]
     // let fail: Add<BVal> = Add(I1, I2);
 }
 ```
