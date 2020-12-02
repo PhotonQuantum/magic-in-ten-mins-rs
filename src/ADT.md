@@ -114,10 +114,11 @@ fn test_nat() {
 ### 链表
 
 ```rust
-enum List<T> {
+pub enum List<T> {
     Nil,
     Cons(T, Box<List<T>>)
 }
+#[macro_export]
 macro_rules! Cons {
     ($n: expr, $l: expr) => {Cons($n, Box::new($l))};
 }

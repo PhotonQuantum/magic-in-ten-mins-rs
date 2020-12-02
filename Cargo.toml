@@ -5,6 +5,9 @@ authors = ["PhotonQuantum <self@lightquantum.me>"]
 edition = "2018"
 build = "build.rs"
 
+[dependencies]
+compile-fail = { git = "https://github.com/rylev/compile-fail" }
+
 [build-dependencies]
 tango = { git = "https://github.com/pnkfelix/tango.git" }
 

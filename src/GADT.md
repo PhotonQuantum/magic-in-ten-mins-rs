@@ -4,6 +4,10 @@
 
 > 前置技能：Rust 基础，ADT
 
+```rust
+use compile_fail::compile_fail;
+```
+
 在ADT中可以构造出如下类型：
 
 ```rust
@@ -50,10 +54,14 @@ fn test_gadt() {
     let v2 = Add(IVal(0), IVal(3));
     let v3 = Add(v1, v2);
     let v4 = Add(v3, v2);
-    // [This will never check]
-    // let fail = Eq(I3, v4);
-    // [This won't either]
-    // let fail: Add<BVal> = Add(I1, I2);
+}
+
+#[compile_fail]
+fn fail_gadt() {
+    // This will never check
+    let fail1 = Eq(I3, v4);
+    // This won't either
+    let fail2: Add<BVal> = Add(I1, I2);
 }
 ```
 
