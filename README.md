@@ -22,7 +22,7 @@ $ cargo test
 
 [偏易|余代数数据类型(Coalgebraic Data Type)[Rust 基础，ADT]](src/CoData.md)
 
-    [偏易|单位半群(Monoid)[Java基础]](doc/Monoid.md)
+[偏易|单位半群(Monoid)[Rust 基础]](src/Monoid.md)
 
     [较难|高阶类型(Higher Kinded Type)[Java基础]](doc/HKT.md)
 
