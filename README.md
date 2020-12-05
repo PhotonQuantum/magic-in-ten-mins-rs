@@ -24,9 +24,9 @@ $ cargo test
 
 [偏易|单位半群(Monoid)[Rust 基础]](src/Monoid.md)
 
-[较难|高阶类型(Higher Kinded Type)[Java基础]](src/HKT.md)
+[较难|高阶类型(Higher Kinded Type)[Rust 基础]](src/HKT.md)
 
-[中等|单子(Monad)[Java基础，HKT]](src/Monad.md)
+[中等|单子(Monad)[Rust 基础，HKT]](src/Monad.md)
 
     [较难|状态单子(State Monad)[Java基础，HKT，Monad]](doc/StateMonad.md)
 
