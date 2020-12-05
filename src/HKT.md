@@ -8,6 +8,12 @@
 use compile_fail::compile_fail;
 ```
 
+> 注意：
+> 
+> 本节使用了 generic associated types 这一不稳定语言特性，需要使用 Nightly Rust 进行编译，并请注意其实现仍然存在问题，可能会造成编译器内部错误或者异常行为，因此请不要将其应用于生产环境。
+> 
+> HKT 在 Stable Rust 中也可以进行模拟，但是其写法不易于理解。感兴趣的读者可以自行阅读 [Method for Emulating Higher-Kinded Types in Rust](https://gist.github.com/edmundsmith/855fcf0cb35dd467c29a9350481f0ecf) 的实现。
+
 ## 常常碰到的困难
 
 写代码的时候常常会碰到语言表达能力不足的问题，比如下面这段用来给`F`容器中的值进行映射的代码：
@@ -32,10 +38,6 @@ fn fail_functor() {
 
 同样的对于`Map`来说它有两个泛型参数，类型可以表示为`(Type, Type) -> Type`。
 
-> 注：需要注意本文对 Map 的定义和 Rust 标准库中的定义有所不同，Rust 将 Map 定义为 Map<I, F>，其中 I 代表迭代器，F 代表映射函数。
-> 
-> 下文中默认以 Map<A, B> 为准。
-
 像这样把类型映射到类型的非平凡类型就叫高阶类型（HKT, Higher Kinded Type）。
 
 虽然 Rust 中存在这样的高阶类型，但是我们并不能用一个泛型参数表示出来，也就不能写出如上`Self<A>`这样的代码了，因为`Self: impl Functor`是个高阶类型。
@@ -44,39 +46,37 @@ fn fail_functor() {
 
 虽然在 Rust 中不能直接表示出高阶类型，但是我们可以通过加一个中间层来在保留完整信息的情况下强类型地模拟出高阶类型。
 
-首先，我们需要一个中间层：
+首先，我们需要一个中间层来储存高阶类型信息：
 
 ```rust
-trait HKT<B> {  // B is the new inner type
-    type A;     // A is the current type
-    type M;     // M is the new type - F<B>
-}               // F<A>
+pub trait HKT {
+    type Higher<T>;
+}
 ```
 
-> 注：这个定义比较反直觉，但是这是我能想到的在 Rust 里简单表达 HKT 的唯一方法。有空的话我会补上另一种用宏模拟 HKT 的黑魔法方法。
+然后我们就可以用 `Higher<A>` 来表示 `F<A>` ，这样操作完 `Higher<A>` 后我们仍然有完整的类型信息来还原 `F<A>` 的类型。
 
 这样，上面`Functor`就可以写成：
 
 ```rust
-trait Functor<B>: HKT<B> {
-    fn map<F>(&self, f: F) -> Self::M where F: Fn(&Self::A) -> B;
+trait Functor<A>: HKT {
+    fn map<F, B>(&self, f: F) -> Self::Higher<B> where F: Fn(&A) -> B;
 }
 ```
 
 这样就可以编译通过了。而对于想实现`Functor`的类，需要先实现`HKT`这个中间层，这里拿`Vec`举例：
 
 ```rust
-impl<A, B> HKT<B> for Vec<A> {
-    type A = A;
-    type M = Vec<B>;
+impl<A> HKT for Vec<A> {
+    type Higher<T> = Vec<T>;
 }
 ```
 
 这样，实现`Functor`类就是一件简单的事情了：
 
 ```rust
-impl<A, B> Functor<B> for Vec<A> {
-    fn map<F>(&self, f: F) -> Self::M where F: Fn(&Self::A) -> B{
+impl<A> Functor<A> for Vec<A> {
+    fn map<F, B>(&self, f: F) -> Self::Higher<B> where F: Fn(&A) -> B {
         self.into_iter().map(f).collect()
     }
 }
@@ -90,5 +90,3 @@ fn test_hkt() {
     assert_eq!(result, vec![false, true, true, false, true]);
 }
 ```
-
-> 注：这种定义方法对于理解 HKT 可能没什么好处，建议参考[原版](https://github.com/goldimax/magic-in-ten-mins/blob/main/doc/HKT.md)。
