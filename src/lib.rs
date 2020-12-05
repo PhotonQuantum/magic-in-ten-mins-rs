@@ -5,6 +5,7 @@
     unused_imports,
     unused_macros,
     incomplete_features,
+    non_camel_case_types
 )]
 #![feature(generic_associated_types)]
 
@@ -13,4 +14,5 @@ mod ADT;
 mod CoData;
 mod GADT;
 mod HKT;
+mod Monad;
 mod Monoid;
