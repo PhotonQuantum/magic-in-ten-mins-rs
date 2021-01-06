@@ -16,3 +16,4 @@ mod GADT;
 mod HKT;
 mod Monad;
 mod Monoid;
+mod StateMonad;

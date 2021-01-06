@@ -58,6 +58,7 @@ fn test_gadt() {
 
 #[compile_fail]
 fn fail_gadt() {
+    // I1-I3, v1-v4 omitted
     // This will never check
     let fail1 = Eq(I3, v4);
     // This won't either
