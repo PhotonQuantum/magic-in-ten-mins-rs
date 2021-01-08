@@ -64,7 +64,7 @@ $ cargo test
 
 ## 编程范式
 
-    [简单|表驱动编程(Table-Driven Programming)[简单Java基础]](doc/TableDriven.md)
+[简单|表驱动编程(Table-Driven Programming)[简单Java基础]](src/TableDriven.md)
 
     [简单|续延(Continuation)[简单Java基础]](doc/Continuation.md)
 
