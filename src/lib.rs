@@ -17,3 +17,4 @@ mod HKT;
 mod Monad;
 mod Monoid;
 mod StateMonad;
+mod TableDriven;
