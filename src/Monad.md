@@ -131,6 +131,37 @@ fn add_m(ma: Option<i64>, mb: Option<i64>) -> Option<i64> {
 
 这样看上去比连续`if-return`优雅很多。在一些有语法糖的语言(`Haskell`)里面Monad的逻辑甚至可以像上面右边的注释一样简单明了。
 
+> 注：
+> 
+> 让我们试着在 Rust 里糊一下这个语法糖（do notation）
+
+```rust
+macro_rules! mdo {
+    ($monad:ident, pure $e:expr) => ($monad::pure($e));
+
+    ($monad:ident, _ <- $e:expr ; $($rest:tt)*) => ($monad::fmap($e, move |_| mdo!($monad, $($rest)*)));
+    ($monad:ident, _ <- pure $e:expr ; $($rest:tt)*) => ($monad::fmap($monad::pure($e), move |_| mdo!($monad, $($rest)*)));
+
+    ($monad:ident, $v:ident <- $e:expr ; $($rest:tt)*) => (<$monad>::fmap($e, move |$v| mdo!($monad, $($rest)*)));
+    ($monad:ident, $v:ident <- pure $e:expr ; $($rest:tt)*) => ($monad::fmap($monad::pure($e), move |$v| mdo!($monad, $($rest)*)));
+
+    ($monad:ident, ($($vs:pat),*) <- $e:expr ; $($rest:tt)*) => ($monad::fmap($e, move |($($vs),*)| mdo!($monad, $($rest)*)));
+    ($monad:ident, ($($vs:pat),*) <- pure $e:expr ; $($rest:tt)*) => ($monad::fmap($monad::pure($e), move |($($vs),*)| mdo!($monad, $($rest)*)));
+
+    ($monad:ident, $e:expr ; $($rest:tt)*) => ($monad::fmap($e, move |_| mdo!($monad, $($rest)*)));
+    ($monad:ident, $e:expr) => ($e)
+}
+
+fn add_m_with_do(ma: Option<i64>, mb: Option<i64>) -> Option<i64> {
+    type m = Option<i64>;
+    mdo!(m,
+        a <- ma;
+        b <- mb;
+        pure (a + b)
+    )
+}
+```
+
 敏锐的读者在阅读上述`add_i`的实现时，可能已经发现，在 Rust 中这一函数有更自然的内置写法：
 
 ```rust
@@ -153,7 +184,7 @@ pub fn and_then<U, F: FnOnce(T) -> Option<U>>(self, f: F) -> Option<U> {}
 让我们抄下来并改写一下 fmap 的签名：
 ```rust
 #[compile_fail]
-fn fmap<U, F: Fn(&A) -> Self::Higher<U>>(&self, f: F) -> Self::Higher<U> {}
+fn fmap<U, F: Fn(A) -> Self::Higher<U>>(&self, f: F) -> Self::Higher<U> {}
 ```
 
 所以，如果你已经写过一段时间的 Rust，你很有可能已经在不知不觉中大量使用了 Option Monad 和 flatmap 了。

@@ -81,15 +81,15 @@ impl<'a, S: 'a, A: 'a + Clone> Monad<'a, A> for State<'a, S, A> {
 仅仅这样的话 `State` 使用起来并不方便，还需要定义一些常用的操作来读取写入状态：
 
 ```rust
-fn get<'a, S: Clone>() -> State<'a, S, S> {
+pub fn get<'a, S: Clone>() -> State<'a, S, S> {
     State { run_state: Box::new(|state: S| (state.clone(), state)) }
 }
 
-fn put<'a, S: 'a + Clone>(state: S) -> State<'a, S, ()> {
+pub fn put<'a, S: 'a + Clone>(state: S) -> State<'a, S, ()> {
     State { run_state: Box::new(move |_| ((), state.clone())) }
 }
 
-fn modify<'a, S: 'a + Clone>(f: impl Fn(S) -> S + 'a) -> State<'a, S, ()> {
+pub fn modify<'a, S: 'a + Clone>(f: impl Fn(S) -> S + 'a) -> State<'a, S, ()> {
     State::fmap(
         get(),
         move |x| put(f(x))
@@ -97,11 +97,11 @@ fn modify<'a, S: 'a + Clone>(f: impl Fn(S) -> S + 'a) -> State<'a, S, ()> {
 }
 
 impl<'a, S: 'a + Clone, A: 'a> State<'a, S, A> {
-    fn run(self, state: S) -> (A, S) {
+    pub fn run(self, state: S) -> (A, S) {
         (self.run_state)(state)
     }
 
-    fn eval(self, state: S) -> A {
+    pub fn eval(self, state: S) -> A {
         (self.run_state)(state).0
     }
 }
@@ -140,16 +140,33 @@ fib n = do
 
 ~~看上去简单很多~~
 
+> 注：
+>
 > Rust 版看上去似乎差不多，而且可以通过 macro 改造成 do notation
+
+```rust
+fn fib_with_do(n: u64) -> State<'static, (u64, u64), u64> {
+    match n {
+        0 => mdo!(State,
+            (x, _) <- get();
+            pure x
+        ),
+        _ => mdo!(State,
+            modify(|x: (u64, u64)|(x.1, x.0+x.1));
+            fib_with_do(n-1)
+        ),
+    }
+}
+```
 
 ## 有什么用
 
 求斐波那契数列有着更简单的写法：
 
 ```rust
-fn imp_fib(n: usize) -> u64{
+fn imp_fib(n: usize) -> u64 {
     let mut a: [u64; 3] = [0, 1, 1];
-    for i in 0..(n-1){
+    for i in 0..(n - 1) {
         a[(i + 2) % 3] = a[(i + 1) % 3] + a[i % 3];
     }
     a[n % 3]
@@ -190,15 +207,8 @@ fib n = fib (n-1) + fib (n-2)
 #[test]
 fn test_fib() {
     assert_eq!(fib(7).eval((0, 1)), 13);
-}
-
-#[test]
-fn test_imp_fib() {
+    assert_eq!(fib_with_do(7).eval((0, 1)), 13);
     assert_eq!(imp_fib(7), 13);
-}
-
-#[test]
-fn test_naive_fib() {
     assert_eq!(naive_fib(7), 13);
 }
 ```

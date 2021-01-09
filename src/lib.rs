@@ -14,6 +14,7 @@ mod ADT;
 mod CoData;
 mod GADT;
 mod HKT;
+#[macro_use]
 mod Monad;
 mod Monoid;
 mod StateMonad;
