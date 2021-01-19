@@ -83,7 +83,7 @@ final
 ## 代数作用
 
 如果说在刚刚异常恢复的基础上希望在恢复时修补之前的异常错误就需要把之前的 `resume` 函数加上参数，
-这样修改以后它就成了代数作用（Algebaic Effect）的基础工具：
+这样修改以后它就成了代数作用（Algebraic Effect）的基础工具：
 
 ```rust
 type ResumeFuncTy<T> = dyn FnOnce(T) -> ();
