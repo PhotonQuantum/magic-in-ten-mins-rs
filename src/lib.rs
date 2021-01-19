@@ -16,6 +16,8 @@ mod GADT;
 mod HKT;
 #[macro_use]
 mod Monad;
+mod Algeff;
+mod Continuation;
 mod Monoid;
 mod StateMonad;
 mod TableDriven;

@@ -5,12 +5,12 @@
 > 前置技能：Rust 基础
 
 ```rust
-use std::fmt::{Display, Formatter, Result};
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter, Result};
 
 use self::Bool::*;
-use self::Nat::*;
 use self::List::*;
+use self::Nat::*;
 ```
 
 ## 积类型（Product type）
@@ -20,7 +20,7 @@ use self::List::*;
 ```rust
 struct Student {
     name: String,
-    id: i64
+    id: i64,
 }
 ```
 
@@ -32,8 +32,8 @@ struct Student {
 
 ```rust
 enum SchoolPerson {
-    Student {name: String, id: i64},
-    Teacher {name: String, office: String}
+    Student { name: String, id: i64 },
+    Teacher { name: String, office: String },
 }
 ```
 
@@ -49,7 +49,8 @@ SchoolPerson 可能是 Student 也可能是 Teacher。这种类型存在多种�
 
 ```rust
 enum Bool {
-    True, False
+    True,
+    False,
 }
 ```
 
@@ -61,7 +62,7 @@ fn test_bool() {
     let b = True;
     match b {
         True => (),
-        False => panic!("oh my?")
+        False => panic!("oh my?"),
     };
 }
 ```
@@ -73,10 +74,12 @@ fn test_bool() {
 ```rust
 enum Nat {
     S(Box<Nat>),
-    O
+    O,
 }
 macro_rules! S {
-    ($n: expr) => {S(Box::new($n))};
+    ($n: expr) => {
+        S(Box::new($n))
+    };
 }
 ```
 
@@ -93,7 +96,7 @@ impl Display for Nat {
                     n += 1;
                     nat = _n;
                 }
-                O => break
+                O => break,
             }
         }
         write!(f, "{}", n)
@@ -116,11 +119,18 @@ fn test_nat() {
 ```rust
 pub enum List<T> {
     Nil,
-    Cons(T, Box<List<T>>)
+    Cons(T, Box<List<T>>),
+}
+impl<T> Default for List<T> {
+    fn default() -> Self {
+        Nil
+    }
 }
 #[macro_export]
 macro_rules! Cons {
-    ($n: expr, $l: expr) => {Cons($n, Box::new($l))};
+    ($n: expr, $l: expr) => {
+        List::Cons($n, Box::new($l))
+    };
 }
 ```
 
@@ -148,6 +158,6 @@ enum JsonValue {
     JsonInt(i64),
     JsonString(String),
     JsonArray(Vec<Box<JsonValue>>),
-    JsonMap(HashMap<String, Box<JsonValue>>)
+    JsonMap(HashMap<String, Box<JsonValue>>),
 }
 ```

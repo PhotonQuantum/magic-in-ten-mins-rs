@@ -64,11 +64,11 @@ $ cargo test
 
 ## 编程范式
 
-[简单|表驱动编程(Table-Driven Programming)[简单Java基础]](src/TableDriven.md)
+[简单|表驱动编程(Table-Driven Programming)[简单 Rust 基础]](src/TableDriven.md)
 
-    [简单|续延(Continuation)[简单Java基础]](doc/Continuation.md)
+[简单|续延(Continuation)[简单 Rust 基础]](src/Continuation.md)
 
-    [中等|代数作用(Algebraic Effect)[简单Java基础，续延]](doc/Algeff.md)
+[中等|代数作用(Algebraic Effect)[简单 Rust 基础，续延]](src/Algeff.md)
 
     [中等|依赖注入(Dependency Injection)[Java基础，Monad，代数作用]](doc/DepsInj.md)
 
