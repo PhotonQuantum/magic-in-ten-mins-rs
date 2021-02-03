@@ -54,7 +54,7 @@ $ cargo test
 
     [偏易|求值策略(Evaluation Strategy)[Java基础，λ演算]](doc/EvalStrategy.md)
 
-    [较难|丘奇编码(Church Encoding)[λ 演算]](doc/ChurchE.md)
+[较难|丘奇编码(Church Encoding)[λ 演算]](src/ChurchE.md)
 
     [很难|斯科特编码(Scott Encoding)[构造演算，ADT，μ](doc/ScottE.md)
 

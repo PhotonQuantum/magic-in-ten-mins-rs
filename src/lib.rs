@@ -7,7 +7,7 @@
     incomplete_features,
     non_camel_case_types
 )]
-#![feature(generic_associated_types)]
+#![feature(generic_associated_types, box_syntax)]
 
 #[macro_use]
 mod ADT;
@@ -17,6 +17,7 @@ mod HKT;
 #[macro_use]
 mod Monad;
 mod Algeff;
+mod ChurchE;
 mod Continuation;
 mod Monoid;
 mod StateMonad;
