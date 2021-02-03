@@ -62,12 +62,14 @@ fn fail_gadt() {
     // This will never check
     let fail1 = Eq(I3, v4);
     // This won't either
-    let fail2: Add<BVal> = Add(I1, I2);
+    let fail2: Add<BVal, BVal> = Add(I1, I2);
 }
 ```
 
 需要注意到四个 struct (`IVal`, `BVal`, `Add`, `Eq`) 实现的 trait 并不是 `Expr<Backing=T>` 而是包含了 associative type 的 `Expr`，这和ADT并不一样。而这即模拟了广义代数数据类型（Generalized Algebraic Data Type, GADT）。
 
-> 建议：
+> 注：
 >
 > Rust 模拟 GADT 的实现较为繁琐并且不易于理解，建议参考[原版 Java 模拟实现](https://github.com/goldimax/magic-in-ten-mins/blob/main/doc/GADT.md)。
+>
+> 另可参考 [refl](https://docs.rs/refl/) 使用了 GAT 构造类型相等的证明来实现 GADT。
