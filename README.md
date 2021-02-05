@@ -72,7 +72,7 @@ $ cargo test
 
     [中等|依赖注入(Dependency Injection)[Java基础，Monad，代数作用]](doc/DepsInj.md)
 
-    [中等|提升(Lifting)[Java基础，HKT，Monad]](doc/Lifting.md)
+[中等|提升(Lifting)[Rust 基础，HKT，Monad]](src/Lifting.md)
 
 ## 编译原理
 
