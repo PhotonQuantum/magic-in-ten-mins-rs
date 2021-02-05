@@ -21,10 +21,9 @@ use compile_fail::compile_fail;
 pub trait Monad<'a, A>: HKT {
     fn pure(v: A) -> Self;
     fn fmap<F: 'a, B>(self, f: F) -> Self::Higher<B>
-        where
-            F: Fn(A) -> Self::Higher<B>;
+    where
+        F: Fn(A) -> Self::Higher<B>;
 }
-
 ```
 
 其中`pure`要求返回一个包含参数类型内容的数据结构，`fmap`要求把值经过`f`以后再串起来。
@@ -42,6 +41,10 @@ impl<A> Monad<'_, A> for Vec<A> {
     where
         F: Fn(A) -> Self::Higher<B>,
     {
+        // let mut new_vec: Self::Higher<B> = vec![];
+        // self.into_iter()
+        //     .for_each(|item| f(item).into_iter().for_each(|i| new_vec.push(i)));
+        // new_vec
         self.into_iter().flat_map(f).collect()
     }
 }
@@ -132,24 +135,24 @@ fn add_m(ma: Option<i64>, mb: Option<i64>) -> Option<i64> {
 这样看上去比连续`if-return`优雅很多。在一些有语法糖的语言(`Haskell`)里面Monad的逻辑甚至可以像上面右边的注释一样简单明了。
 
 > 注：
-> 
+>
 > 让我们试着在 Rust 里糊一下这个语法糖（do notation）
 
 ```rust
 macro_rules! mdo {
-    ($monad:ident, pure $e:expr) => ($monad::pure($e));
+    ($monad:ty, pure $e:expr) => (<$monad>::pure($e));
 
-    ($monad:ident, _ <- $e:expr ; $($rest:tt)*) => ($monad::fmap($e, move |_| mdo!($monad, $($rest)*)));
-    ($monad:ident, _ <- pure $e:expr ; $($rest:tt)*) => ($monad::fmap($monad::pure($e), move |_| mdo!($monad, $($rest)*)));
+    ($monad:ty, _ <- $e:expr ; $($rest:tt)*) => (<$monad>::fmap($e, move |_| mdo!($monad, $($rest)*)));
+    ($monad:ty, _ <- pure $e:expr ; $($rest:tt)*) => (<$monad>::fmap($monad::pure($e), move |_| mdo!($monad, $($rest)*)));
 
-    ($monad:ident, $v:ident <- $e:expr ; $($rest:tt)*) => (<$monad>::fmap($e, move |$v| mdo!($monad, $($rest)*)));
-    ($monad:ident, $v:ident <- pure $e:expr ; $($rest:tt)*) => ($monad::fmap($monad::pure($e), move |$v| mdo!($monad, $($rest)*)));
+    ($monad:ty, $v:ident <- $e:expr ; $($rest:tt)*) => (<$monad>::fmap($e, move |$v| mdo!($monad, $($rest)*)));
+    ($monad:ty, $v:ident <- pure $e:expr ; $($rest:tt)*) => (<$monad>::fmap($monad::pure($e), move |$v| mdo!($monad, $($rest)*)));
 
-    ($monad:ident, ($($vs:pat),*) <- $e:expr ; $($rest:tt)*) => ($monad::fmap($e, move |($($vs),*)| mdo!($monad, $($rest)*)));
-    ($monad:ident, ($($vs:pat),*) <- pure $e:expr ; $($rest:tt)*) => ($monad::fmap($monad::pure($e), move |($($vs),*)| mdo!($monad, $($rest)*)));
+    ($monad:ty, ($($vs:pat),*) <- $e:expr ; $($rest:tt)*) => (<$monad>::fmap($e, move |($($vs),*)| mdo!($monad, $($rest)*)));
+    ($monad:ty, ($($vs:pat),*) <- pure $e:expr ; $($rest:tt)*) => (<$monad>::fmap($monad::pure($e), move |($($vs),*)| mdo!($monad, $($rest)*)));
 
-    ($monad:ident, $e:expr ; $($rest:tt)*) => ($monad::fmap($e, move |_| mdo!($monad, $($rest)*)));
-    ($monad:ident, $e:expr) => ($e)
+    ($monad:ty, $e:expr ; $($rest:tt)*) => (<$monad>::fmap($e, move |_| mdo!($monad, $($rest)*)));
+    ($monad:ty, $e:expr) => ($e)
 }
 
 fn add_m_with_do(ma: Option<i64>, mb: Option<i64>) -> Option<i64> {

@@ -147,11 +147,11 @@ fib n = do
 ```rust
 fn fib_with_do(n: u64) -> State<'static, (u64, u64), u64> {
     match n {
-        0 => mdo!(State,
+        0 => mdo!(State<_, _>,
             (x, _) <- get();
             pure x
         ),
-        _ => mdo!(State,
+        _ => mdo!(State<_, _>,
             modify(|x: (u64, u64)|(x.1, x.0+x.1));
             fib_with_do(n-1)
         ),
