@@ -74,11 +74,19 @@ fn liftM2Vec<A: Copy, B: Copy, C: Copy>(f: impl Fn(A, B) -> C + Copy)
             b <- mb.clone();
             pure f(a, b)
         )
+        // After macro expansion:
+        // <Vec<_>>::fmap(ma, move |a|
+        // <Vec<_>>::fmap(mb.clone(), move |b|
+        // <Vec<_>>::pure((f(a, b)))))
     }
 }
 ```
 
-> 注：
+> 注:
+> 
+> 使用了来自于 Monad 一节的 do notation macro。
+ 
+> 注2：
 >
 > ... 这太扭曲了，但是我实在是糊不出更好的实现，类型体操顶不住了
 >
@@ -155,12 +163,12 @@ let b = vec![Some(3), Some(2), None, Some(0)];
 println!("{:?}", add_vec(a, b)); // [Some(4), Some(4), None, None]
 ```
 
-You’ll need to create an `auto_vec` procedural macro for functions of any number of arguments.
-You’ll need to report a runtime error if the parameters of the vectorized functions are not correct.
+You’ll need to create an `auto_vec` procedural macro for functions of any number of arguments. You’ll need to report a
+runtime error if the parameters of the vectorized functions are not correct.
 (e.g. a and b have different length)
 
-注意到，以上题目要求本质上是要求将一个 `A -> B -> ... -> Z` 的函数提升为 `Vec<A> -> Vec<B> -> ... -> Vec<Z>`。
-只不过其使用的技术手段并不是 lift 函数，而是通过 Rust 的过程宏 codegen 出一个新的函数。
+注意到，以上题目要求本质上是要求将一个 `A -> B -> ... -> Z` 的函数提升为 `Vec<A> -> Vec<B> -> ... -> Vec<Z>`。 只不过其使用的技术手段并不是 lift 函数，而是通过 Rust
+的过程宏 codegen 出一个新的函数。
 
 并且请仔细观察题设，其要求的函数体行为与 liftM 存在不同。
 
