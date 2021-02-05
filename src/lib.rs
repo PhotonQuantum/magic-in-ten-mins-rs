@@ -19,6 +19,7 @@ mod Monad;
 mod Algeff;
 mod ChurchE;
 mod Continuation;
+mod Lifting;
 mod Monoid;
 mod StateMonad;
 mod TableDriven;
