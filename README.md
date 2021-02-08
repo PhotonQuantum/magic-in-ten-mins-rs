@@ -62,6 +62,12 @@ $ cargo test
 
     [中等|μ(Mu)[Java 基础，构造演算， Y 组合子]](doc/Mu.md)
 
+    [中等|向量和有限集(Vector & FinSet)[构造演算， ADT ，依赖类型模式匹配]](doc/VecFin.md)
+
+## 形式化验证
+
+[偏易|Curry-Howard 同构(Curry-Howard Isomorphism)[构造演算]](src/CHIso.md)
+
 ## 编程范式
 
 [简单|表驱动编程(Table-Driven Programming)[简单 Rust 基础]](src/TableDriven.md)

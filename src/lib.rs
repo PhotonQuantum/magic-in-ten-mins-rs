@@ -5,9 +5,11 @@
     unused_imports,
     unused_macros,
     incomplete_features,
-    non_camel_case_types
+    non_camel_case_types,
+    non_upper_case_globals,
+    unreachable_code
 )]
-#![feature(generic_associated_types, box_syntax)]
+#![feature(generic_associated_types, box_syntax, never_type)]
 
 #[macro_use]
 mod ADT;
@@ -17,6 +19,7 @@ mod HKT;
 #[macro_use]
 mod Monad;
 mod Algeff;
+mod CHIso;
 mod ChurchE;
 mod Continuation;
 mod Lifting;
