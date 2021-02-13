@@ -121,8 +121,17 @@ bool 等极少量内置类型来作为被依赖的值）
 我们定义 `平行` 命题（类型）和 `伪` 命题（类型）：
 
 ```rust
+#[derive(PartialEq, Eq)]
+pub enum Line {
+    A,
+    B,
+    C,
+    D
+}
+use self::Line::*;
+
 #[derive(Copy, Clone, Default)]
-pub struct Parallel<const a: usize, const b: usize> {}
+pub struct Parallel<const a: Line, const b: Line> {}
 
 type False = !;     // never type
 ```
@@ -135,7 +144,7 @@ type False = !;     // never type
 
 ```rust
 mod Axioms {
-    use super::{False, Parallel};
+    use super::{False, Parallel, Line};
 
     pub fn bot_elim<T: Default>(contra: False) -> T {
         Default::default()
@@ -169,14 +178,14 @@ mod Axioms {
 
 ```rust
     // forall a b, a ∥ b -> b ∥ a
-    pub fn sym<const a: usize, const b: usize>(
+    pub fn sym<const a: Line, const b: Line>(
         p: Parallel<{ a }, { b }>,
     ) -> Parallel<{ b }, { a }> {
         Default::default()
     }
 
     // forall a b c, a ∥ b -> b ∥ c -> a ∥ c
-    pub fn trans<const a: usize, const b: usize, const c: usize>(
+    pub fn trans<const a: Line, const b: Line, const c: Line>(
         p: Parallel<{ a }, { b }>,
         q: Parallel<{ b }, { c }>,
     ) -> Parallel<{ a }, { c }> {
@@ -184,7 +193,7 @@ mod Axioms {
     }
 
     // forall a, a ∥ a
-    pub fn refl<const a: usize>() -> Parallel<{ a }, { a }> {
+    pub fn refl<const a: Line>() -> Parallel<{ a }, { a }> {
         Default::default()
     }
 }
@@ -223,7 +232,7 @@ fn ex_falso<P, Q: Default>(h1: P, contra: not!(P)) -> Q {
 来一些具体的矛盾
 ```rust
 // forall a b c, a ∥ b -> a ∦ b -> c ∥ d
-fn explosion<const a: usize, const b: usize, const c: usize, const d: usize>(
+fn explosion<const a: Line, const b: Line, const c: Line, const d: Line>(
     h1: Parallel<{ a }, { b }>,
     h2: not!(Parallel<{a}, {b}>),
 ) -> Parallel<{ c }, { d }> {
@@ -236,7 +245,7 @@ fn explosion<const a: usize, const b: usize, const c: usize, const d: usize>(
 显然地，a ∦ b 推出 b ∦ a
 ```rust
 // forall a b, a ∦ b -> b ∦ a
-fn theorem_neg_par_sym<const a: usize, const b: usize>(
+fn theorem_neg_par_sym<const a: Line, const b: Line>(
     hyp: not!(Parallel<{ a }, { b }>),
     contra: Parallel<{ b }, { a }>,
 ) -> False {
@@ -264,7 +273,7 @@ fn theorem_neg_par_sym<const a: usize, const b: usize>(
 
 ```rust
 // forall a b c, a ∥ b -> a ∦ c -> c ∦ b
-fn lemma<const a: usize, const b: usize, const c: usize>(
+fn lemma<const a: Line, const b: Line, const c: Line>(
     h1: Parallel<{ a }, { b }>,
     h2: not!(Parallel<{ a }, { c }>),
     contra: Parallel<{ c }, { b }>,
@@ -277,7 +286,7 @@ fn lemma<const a: usize, const b: usize, const c: usize>(
 
 ```rust
 // forall a b c d, a ∥ b -> c ∥ d -> a ∦ d -> b ∦ c
-fn theorem_complex<const a: usize, const b: usize, const c: usize, const d: usize>(
+fn theorem_complex<const a: Line, const b: Line, const c: Line, const d: Line>(
     h1: Parallel<{ a }, { b }>,
     h2: Parallel<{ c }, { d }>,
     h3: not!(Parallel<{ a }, { d }>),
@@ -292,14 +301,10 @@ fn theorem_complex<const a: usize, const b: usize, const c: usize, const d: usiz
 ```rust
 #[test]
 fn reasoning() {
-    const A: usize = 1;
-    const B: usize = 2;
-    const C: usize = 3;
-    const D: usize = 4;
-    let goal: Box<not_dyn!(Parallel<B, C>)> = box |contra| {
+    let goal: Box<not_dyn!(Parallel<{B}, {C}>)> = box |contra| {
         theorem_complex(
-            Parallel::<A, B> {},
-            Parallel::<C, D> {},
+            Parallel::<{A}, {B}> {},
+            Parallel::<{C}, {D}> {},
             |_| loop {}, // this fn never returns
             contra,
         )
@@ -312,3 +317,15 @@ fn reasoning() {
 > 注意到定理的第三个输入参数我们没有给任何类型标注，这是因为 Rust 的类型推导可以自动推出所需的类型（命题）。
 > 
 > 为了体现出这个函数的返回值（它的类型是 False）不可能构造出来，函数体被填成了一个死循环，意味着它永远不可能被构造出来。
+
+## 补充：练习迫害苏格拉底
+
+尝试定义类型 `Human` 表示人类（其中可以只有一个实例 `socrates` 苏格拉底），`Mortal` 表示会死，另加一公理 `人是会死的`，
+来表述以下经典三段论：
+
+```
+所有人都会死的。
+苏格拉底是人。
+所以苏格拉底会死。
+```
+

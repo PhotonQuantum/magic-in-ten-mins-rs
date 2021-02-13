@@ -9,13 +9,14 @@
     non_upper_case_globals,
     unreachable_code
 )]
-#![feature(generic_associated_types, box_syntax, never_type)]
+#![feature(generic_associated_types, box_syntax, never_type, const_generics)]
 
 #[macro_use]
 mod ADT;
 mod CoData;
 mod GADT;
 mod HKT;
+// mod HKTMore;
 #[macro_use]
 mod Monad;
 mod Algeff;
@@ -26,3 +27,4 @@ mod Lifting;
 mod Monoid;
 mod StateMonad;
 mod TableDriven;
+mod playground;
