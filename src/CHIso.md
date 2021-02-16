@@ -276,9 +276,9 @@ fn theorem_neg_par_sym<const a: Line, const b: Line>(
 fn lemma<const a: Line, const b: Line, const c: Line>(
     h1: Parallel<{ a }, { b }>,
     h2: not!(Parallel<{ a }, { c }>),
-    contra: Parallel<{ c }, { b }>,
+    contra: Parallel<{ b }, { c }>,
 ) -> False {
-    h2(trans(h1, sym(contra)))
+    h2(trans(h1, contra))
 }
 ```
 
@@ -292,7 +292,7 @@ fn theorem_complex<const a: Line, const b: Line, const c: Line, const d: Line>(
     h3: not!(Parallel<{ a }, { d }>),
     contra: Parallel<{ b }, { c }>,
 ) -> False {
-    lemma(sym(h2), |contra_| lemma(h1, h3, contra_), contra)
+    lemma(trans(h1, contra), h3, h2)
 }
 ```
 
