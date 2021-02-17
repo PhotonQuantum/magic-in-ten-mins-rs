@@ -71,6 +71,10 @@ fn test_monoid_option() {
 }
 ```
 
+> 注：
+> 
+> 注意到 Rust 标准库中 `Option` 的 `and` 方法与此处 `op` 有相同的行为。
+
 ## 应用：Ordering
 
 可以利用 Monoid 实现带优先级的比较
@@ -133,6 +137,10 @@ fn test_monoid_ordering() {
     assert_eq!(student_1.compare(&student_1), Eq);
 }
 ```
+
+> 注：
+> 
+> 注意到 Rust 标准库中的 `std::cmp::Ordering` 具有与此处定义的 `Ordering` 类型有几乎一样的行为，其 `op` 方法被称为 `then`。
 
 ## 扩展
 
