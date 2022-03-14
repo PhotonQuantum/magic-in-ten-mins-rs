@@ -16,6 +16,11 @@ jobs:
           toolchain: nightly
           default: true
       - uses: actions-rs/cargo@v1
+        name: Generate Code 🚀
+        with:
+          command: build
+          args: --workspace
+      - uses: actions-rs/cargo@v1
         name: Check Code Format 🔧
         with:
           command: fmt
