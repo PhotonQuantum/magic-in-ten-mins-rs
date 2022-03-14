@@ -21,11 +21,6 @@ jobs:
           command: build
           args: --workspace
       - uses: actions-rs/cargo@v1
-        name: Check Code Format 🔧
-        with:
-          command: fmt
-          args: -- --check
-      - uses: actions-rs/cargo@v1
         name: Run Clippy Lints 🔨
         with:
           command: clippy
