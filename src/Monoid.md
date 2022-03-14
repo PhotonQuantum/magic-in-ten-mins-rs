@@ -116,9 +116,9 @@ struct Student<'a> {
 impl Student<'_> {
     fn compare(&self, other: &Student) -> Ordering {
         Ordering::id()
-            .op(compare_str(&self.name, &other.name))
-            .op(compare_str(&self.sex, &other.sex))
-            .op(compare_str(&self.from, &other.from))
+            .op(compare_str(self.name, other.name))
+            .op(compare_str(self.sex, other.sex))
+            .op(compare_str(self.from, other.from))
     }
 }
 ```

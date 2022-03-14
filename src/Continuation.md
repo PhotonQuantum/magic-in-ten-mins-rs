@@ -127,9 +127,9 @@ fn call_t() {
 > 这边为了规避全局的 vector 并简化所有权与引用关系，使用了 call stack 来持有 catch handler，效果是一样的。
 
 ```rust
-type FinalFuncTy = dyn FnOnce() -> ();
-type CatchFuncTy = dyn FnOnce(Box<dyn Error>, Box<FinalFuncTy>) -> ();
-type BodyFuncTy = dyn FnOnce(Box<CatchFuncTy>, Box<FinalFuncTy>) -> ();
+type FinalFuncTy = dyn FnOnce();
+type CatchFuncTy = dyn FnOnce(Box<dyn Error>, Box<FinalFuncTy>);
+type BodyFuncTy = dyn FnOnce(Box<CatchFuncTy>, Box<FinalFuncTy>);
 
 fn r#try(body: Box<BodyFuncTy>, catch: Box<CatchFuncTy>, r#final: Box<FinalFuncTy>) {
     body(catch, r#final);
