@@ -77,7 +77,7 @@ impl<A> HKT for Vec<A> {
 ```rust
 impl<A> Functor<A> for Vec<A> {
     fn map<F, B>(&self, f: F) -> Self::Higher<B> where F: Fn(&A) -> B {
-        self.into_iter().map(f).collect()
+        self.iter().map(f).collect()
     }
 }
 ```

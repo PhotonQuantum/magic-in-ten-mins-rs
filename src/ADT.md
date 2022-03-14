@@ -88,17 +88,10 @@ macro_rules! S {
 ```rust
 impl Display for Nat {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        let mut n = 0;
-        let mut nat = self.clone();
-        loop {
-            match nat {
-                S(_n) => {
-                    n += 1;
-                    nat = _n;
-                }
-                O => break,
-            }
-        }
+        let n = std::iter::successors(Some(self), |n| match n {
+            S(n) => Some(&*n),
+            O => None,
+        }).skip(1).count();
         write!(f, "{}", n)
     }
 }
@@ -154,10 +147,10 @@ ADT 最适合构造树状的结构，比如解析 JSON 出的结果需要一个�
 
 ```rust
 enum JsonValue {
-    JsonBool(bool),
-    JsonInt(i64),
-    JsonString(String),
-    JsonArray(Vec<Box<JsonValue>>),
-    JsonMap(HashMap<String, Box<JsonValue>>),
+    Bool(bool),
+    Int(i64),
+    String(String),
+    Array(Vec<JsonValue>),
+    Map(HashMap<String, JsonValue>),
 }
 ```

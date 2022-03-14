@@ -19,10 +19,10 @@ use std::error::Error;
 下面是实现可恢复异常的 `try-catch` ：
 
 ```rust
-type BareResumeFuncTy = dyn FnOnce() -> ();
-type FinalFuncTy = dyn FnOnce() -> ();
-type BareCatchFuncTy = dyn FnOnce(Box<dyn Error>, Box<BareResumeFuncTy>) -> ();
-type BareBodyFuncTy = dyn FnOnce(Box<BareCatchFuncTy>, Box<FinalFuncTy>) -> ();
+type BareResumeFuncTy = dyn FnOnce();
+type FinalFuncTy = dyn FnOnce();
+type BareCatchFuncTy = dyn FnOnce(Box<dyn Error>, Box<BareResumeFuncTy>);
+type BareBodyFuncTy = dyn FnOnce(Box<BareCatchFuncTy>, Box<FinalFuncTy>);
 
 fn r#try(body: Box<BareBodyFuncTy>, catch: Box<BareCatchFuncTy>, r#final: Box<FinalFuncTy>) {
     body(catch, r#final);
@@ -86,9 +86,9 @@ final
 这样修改以后它就成了代数作用（Algebraic Effect）的基础工具：
 
 ```rust
-type ResumeFuncTy<T> = dyn FnOnce(T) -> ();
-type CatchFuncTy<T> = dyn FnOnce(Box<dyn Error>, Box<ResumeFuncTy<T>>) -> ();
-type BodyFuncTy<T> = dyn FnOnce(Box<CatchFuncTy<T>>, Box<FinalFuncTy>) -> ();
+type ResumeFuncTy<T> = dyn FnOnce(T);
+type CatchFuncTy<T> = dyn FnOnce(Box<dyn Error>, Box<ResumeFuncTy<T>>);
+type BodyFuncTy<T> = dyn FnOnce(Box<CatchFuncTy<T>>, Box<FinalFuncTy>);
 
 fn try_alt<T>(body: Box<BodyFuncTy<T>>, catch: Box<CatchFuncTy<T>>, r#final: Box<FinalFuncTy>) {
     body(catch, r#final);
