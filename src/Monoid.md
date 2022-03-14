@@ -12,7 +12,7 @@ use self::Ordering::*;
 
 半群是一种代数结构，在集合 `A` 上包含一个将两个 `A` 的元素映射到 `A` 上的运算即 `<> : (A, A) -> A` ，同时该运算满足**结合律**即 `(a <> b) <> c == a <> (b <> c)` ，那么代数结构 `{<>, A}` 就是一个半群。
 
-比如在自然数集上的加法或者减法可以构成一个半群，再比如字符串集上字符串的连接构成一个半群。
+比如在自然数集上的加法或者乘法可以构成一个半群，再比如字符串集上字符串的连接构成一个半群。
 
 用 Rust 代码可以表示为：
 
@@ -36,21 +36,13 @@ trait Semigroup: Sized {
 trait Monoid: Semigroup {
     fn id() -> Self;
 }
-
-impl<T: Default + Semigroup> Monoid for T {
-    fn id() -> Self {
-        T::default()
-    }
-}
 ```
-> 提示：
-> 
-> 可以注意到，rust 的 `Default` trait 提供给我们的 default 值正是我们想要的单位元。
-> 方便起见，上述定义中将自动从 default 中取到单位元，并自动将半群定义成单位半群。
 
 ## 应用：Option
 
-在 Rust 中有类型`Option`可以用来表示可能有值的类型，而我们可以将它定义为 Monoid：
+在 Rust 中有类型`Option`可以用来表示可能有值的类型，而我们可以将它定义为 Monoid。
+
+定义其上的二元操作：取第一个不为空的值，单位元为 `None`：
 
 ```rust
 impl<T> Semigroup for Option<T> {
@@ -58,7 +50,10 @@ impl<T> Semigroup for Option<T> {
         if self.is_some() { self } else { b }
     }
 }
-// Option<T> 已经实现 Default trait，此时将自动被定义成单位半群。
+
+impl<T> Monoid for Option<T> {
+    fn id() -> Self { None }
+}
 ```
 
 这样对于 ops 来说我们将获得一串 Option 中第一个不为空的值，对于需要进行一连串尝试操作可以这样写：
@@ -77,7 +72,7 @@ fn test_monoid_option() {
 
 ## 应用：Ordering
 
-可以利用 Monoid 实现带优先级的比较
+可以利用 Monoid 实现带优先级的比较。
 
 ```rust
 #[derive(Debug, PartialEq)]
@@ -90,6 +85,8 @@ fn compare_str(a: &str, b: &str) -> Ordering {
     if a < b { Lt } else if a > b { Gt } else { Eq }
 }
 ```
+
+定义一种 `Ordering` 上的二元操作为取第一个不为等的值，单位元为 `Eq`：
 
 ```rust
 impl Semigroup for Ordering {
@@ -116,9 +113,9 @@ struct Student<'a> {
 impl Student<'_> {
     fn compare(&self, other: &Student) -> Ordering {
         Ordering::id()
-            .op(compare_str(&self.name, &other.name))
-            .op(compare_str(&self.sex, &other.sex))
-            .op(compare_str(&self.from, &other.from))
+            .op(compare_str(self.name, other.name))
+            .op(compare_str(self.sex, other.sex))
+            .op(compare_str(self.from, other.from))
     }
 }
 ```

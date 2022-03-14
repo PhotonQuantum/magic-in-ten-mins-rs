@@ -146,7 +146,7 @@ fn test_shop_list() {
 ```rust
 struct SimpleUI<'a> {
     shop_list: RefCell<ShopList<'a>>,
-    events: Vec<Box<dyn Fn(&Self) -> ()>>,
+    events: Vec<Box<dyn Fn(&Self)>>,
 }
 
 impl Default for SimpleUI<'static> {

@@ -1,0 +1,46 @@
+on: [ push, pull_request ]
+name: Test
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout 🛎️
+      - uses: Swatinem/rust-cache@v1
+      - uses: actions-rs/toolchain@v1
+        name: Setup Cargo Toolchain 🛎️
+        with:
+          components: rustfmt, clippy
+          toolchain: nightly
+          default: true
+      - uses: actions-rs/cargo@v1
+        name: Generate Code 🚀
+        with:
+          command: build
+          args: --workspace
+      - uses: actions-rs/cargo@v1
+        name: Run Clippy Lints 🔨
+        with:
+          command: clippy
+          args: --all-targets --all-features
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout 🛎️
+      - uses: Swatinem/rust-cache@v1
+      - uses: actions-rs/toolchain@v1
+        name: Setup Cargo Toolchain 🛎️
+        with:
+          profile: minimal
+          toolchain: nightly
+          default: true
+      - uses: actions-rs/cargo@v1
+        name: Running Tests 🚀
+        with:
+          command: test
+          args: --workspace
