@@ -22,7 +22,7 @@ use compile_fail::compile_fail;
 #[compile_fail]
 fn fail_functor() {
     trait Functor<A> {
-        fn map<F, A, B>(&self, f: F) -> Self<B> where F: Fn(&A) -> B;
+        fn map<F, B>(&self, f: F) -> Self<B> where F: Fn(&A) -> B;
         //                                   ^ type argument not allowed
     }
 }
