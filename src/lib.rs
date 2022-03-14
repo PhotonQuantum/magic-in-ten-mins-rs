@@ -9,7 +9,7 @@
     non_upper_case_globals,
     unreachable_code
 )]
-#![feature(generic_associated_types, box_syntax, never_type, const_generics)]
+#![feature(generic_associated_types, box_syntax, never_type, adt_const_params)]
 
 #[macro_use]
 mod ADT;
@@ -27,4 +27,3 @@ mod Lifting;
 mod Monoid;
 mod StateMonad;
 mod TableDriven;
-mod playground;
