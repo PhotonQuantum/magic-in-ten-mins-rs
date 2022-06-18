@@ -120,7 +120,7 @@ impl Student<'_> {
 }
 ```
 
-这样的写法比一连串`if-else`优雅太多。
+这样的写法在判断条件更为复杂时可能会比一连串 `if-else` 可读性更高。
 
 ```rust
 #[test]
@@ -136,12 +136,98 @@ fn test_monoid_ordering() {
 ```
 
 > 注：
-> 
+>
 > 注意到 Rust 标准库中的 `std::cmp::Ordering` 具有与此处定义的 `Ordering` 类型有几乎一样的行为，其 `op` 方法被称为 `then`。
 
-## 扩展
+## 接口衍生
 
-这部分代码使用了 Java 的 `Runnable`，而这在 Rust 中并没有很好的直接对应或替代，
-建议参考[原版](https://github.com/goldimax/magic-in-ten-mins/blob/main/doc/Monoid.md#%E6%89%A9%E5%B1%95)。
+在 Monoid 接口里面加一些辅助方法可以支持更多方便的操作：
+
+```rust
+trait MonoidExt: Monoid {
+    fn ops(bs: impl IntoIterator<Item=Self>) -> Self {
+        bs.into_iter().fold(Self::id(), |a, b| a.op(b))
+    }
+    fn cond(condition: bool, then: Self, els: Self) -> Self {
+        if condition { then } else { els }
+    }
+    fn when(condition: bool, then: Self) -> Self {
+        Self::cond(condition, then, Self::id())
+    }
+}
+
+impl<T: Monoid> MonoidExt for T {}
+
+type Thunk = Box<dyn FnOnce()>;
+
+macro_rules! thunk {
+    ($($capture: ident)*, $body: block) => {{
+        $(let mut $capture = $capture.clone())*;
+        Box::new(move || $body) as Thunk
+    }};
+}
+
+impl Semigroup for Thunk {
+    fn op(self, other: Self) -> Self {
+        Box::new(|| {
+            self();
+            other();
+        })
+    }
+}
+
+impl Monoid for Thunk {
+    fn id() -> Self {
+        Box::new(|| {})
+    }
+}
+```
+
+然后就可以像下面这样使用：
+
+```rust
+use std::io::Write;
+
+#[test]
+fn test_monoid_ext() {
+    let exclaim = true;
+    let out = DummyWriter::default();
+
+    let f = Thunk::ops([
+        thunk!(out, { write!(out, "Hello ").unwrap(); }),
+        thunk!(out, { write!(out, "world").unwrap(); }),
+        Thunk::when(exclaim, thunk!(out, { write!(out, "!").unwrap(); })),
+    ]);
+    f();
+
+    assert_eq!(out.into_inner(), b"Hello world!");
+}
+```
 
 > 注：上面 Option 的实现并不是 lazy 的，实际运用中加上非空短路能提高效率。
+
+```rust
+use std::sync::{Arc, Mutex};
+
+#[derive(Clone, Default)]
+struct DummyWriter {
+    buf: Arc<Mutex<Vec<u8>>>
+}
+
+impl DummyWriter {
+    fn into_inner(self) -> Vec<u8> {
+        Arc::try_unwrap(self.buf).unwrap().into_inner().unwrap()
+    }
+}
+
+impl Write for DummyWriter {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.buf.lock().unwrap().extend(buf);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+```
