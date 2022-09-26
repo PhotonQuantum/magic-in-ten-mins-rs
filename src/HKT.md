@@ -21,9 +21,9 @@ use compile_fail::compile_fail;
 ```rust
 #[compile_fail]
 fn fail_functor() {
-    trait Functor {
-        fn map<F, A, B>(&self, f: F) -> Self<B> where F: Fn(&A) -> B;
-        //                                   ^ type argument not allowed
+    trait Functor<A> {
+        fn map<F, B>(&self, f: F) -> Self<B> where F: Fn(&A) -> B;
+        //                                ^ type argument not allowed
     }
 }
 ```
